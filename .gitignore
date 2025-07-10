@@ -1,14 +1,14 @@
-# Node
+# General
 node_modules/
 .env
+bash.exe.stackdump
 
-# React
+# Frontend
 frontend/node_modules/
-dist/
-build/
+frontend/dist/
+
+# Backend
+backend/node_modules/
 
 # Logs
 *.log
-
-# System
-.DS_Store

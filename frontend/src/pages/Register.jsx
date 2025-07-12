@@ -2,20 +2,22 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
-import useAuth from "../hooks/useAuth";
-import { registerUser } from "../api/auth";
+import { useAuth } from "../context/AuthContext"; // updated import path
+import api from "../api/api";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { setUser } = useAuth();
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors, isValid },
   } = useForm({ mode: "onChange" });
+
+  const { fetchProfile } = useAuth();
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
@@ -27,23 +29,26 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const response = await registerUser({
+      // 1. Register the user
+      await api.post("/api/auth/register", {
         name: `${data.firstName} ${data.lastName}`,
         email: data.email,
         password: data.password,
       });
 
-      localStorage.setItem("token", response.data.token);
-      setUser({
-        _id: response.data._id,
-        name: response.data.name,
-        email: response.data.email,
+      // 2. Auto-login after registration
+      const res = await api.post("/api/auth/login", {
+        email: data.email,
+        password: data.password,
       });
-      navigate("/");
+
+      // 3. Save token, fetch user, redirect
+      localStorage.setItem("token", res.data.token);
+      await fetchProfile();
       alert("Registration successful!");
+      navigate("/");
     } catch (err) {
-      const message =
-        err.response?.data?.message || err.message || "Something went wrong.";
+      const message = err.response?.data?.message || "Something went wrong.";
       alert(message);
     } finally {
       setIsLoading(false);

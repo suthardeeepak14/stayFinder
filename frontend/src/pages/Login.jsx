@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { loginUser } from "../api/auth";
-import useAuth from "../hooks/useAuth";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // make sure this exists
+import api from "../api/api";
 
 const Login = () => {
-  const { setUser } = useAuth();
+  const { fetchProfile } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,18 +20,13 @@ const Login = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await loginUser(data);
-      localStorage.setItem("token", response.data.token);
-      setUser({
-        _id: response.data._id,
-        name: response.data.name,
-        email: response.data.email,
-      });
+      const res = await api.post("/api/auth/login", data);
+      localStorage.setItem("token", res.data.token);
+      await fetchProfile(); // loads user context
       alert("Login successful!");
       navigate("/");
     } catch (err) {
-      const message =
-        err.response?.data?.message || err.message || "Login failed";
+      const message = err.response?.data?.message || "Login failed";
       alert(message);
     } finally {
       setIsLoading(false);

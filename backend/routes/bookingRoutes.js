@@ -4,6 +4,8 @@ import {
   getUserBookings,
   getOwnerBookings,
   confirmBookingOTP,
+  cancelMyBooking,
+  updateBookingStatus,
 } from "../controllers/bookingController.js";
 import { protect } from "../middleware/authMiddleware.js";
 

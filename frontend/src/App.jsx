@@ -1,10 +1,33 @@
-import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import Navigation from "./components/Navigation";
+// import Footer from "./components/Footer";
+import Homepage from "./pages/HomePage";
+// import PropertyDetails from "./pages/PropertyDetails";
+// import UserDashboard from "./pages/UserDashboard";
+// import HostDashboard from "./pages/HostDashboard";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import { ListingsProvider } from "./context/ListingContext";
 
 function App() {
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-100 text-2xl font-bold">
-      Welcome to StayFinder 🏡
-    </div>
+    <AuthProvider>
+      <ListingsProvider>
+        <Router>
+          <Navigation />
+          <Routes>
+            <Route path="/" element={<Homepage />} />
+            {/* <Route path="/property/:id" element={<PropertyDetails />} /> */}
+            {/* <Route path="/dashboard" element={<UserDashboard />} /> */}
+            {/* <Route path="/host-dashboard" element={<HostDashboard />} />  */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+          {/* <Footer /> */}
+        </Router>
+      </ListingsProvider>
+    </AuthProvider>
   );
 }
 
